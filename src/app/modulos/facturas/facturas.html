@@ -1,0 +1,299 @@
+<div class="container-fluid py-3">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Gestión de facturas</h2>
+            <p class="text-muted">
+                Consulta y administra las facturas de SEITELCOM.
+            </p>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary" (click)="cargarFacturas()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Actualizar facturas
+        </button>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-receipt text-primary fs-3"></i>
+                    <p class="text-muted mt-3">Total de facturas</p>
+                    <h3>{{ facturas.length }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-check-circle text-success fs-3"></i>
+                    <p class="text-muted mt-3">Facturas pagadas</p>
+                    <h3>{{ facturasPagadas }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <i class="bi bi-clock-history text-warning fs-3"></i>
+                    <p class="text-muted mt-3">Facturas pendientes</p>
+                    <h3>{{ facturasPendientes }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tabla -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">Facturas registradas</h5>
+
+                <input type="text" class="form-control w-50" placeholder="Buscar factura..." [(ngModel)]="busqueda">
+            </div>
+
+            <div *ngIf="cargando" class="text-center py-4">
+                Cargando facturas...
+            </div>
+
+            <div *ngIf="error" class="alert alert-danger">
+                {{ error }}
+            </div>
+
+            <div *ngIf="!cargando && !error" class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Fecha de emisión</th>
+                            <th>Fecha de vencimiento</th>
+                            <th>Valor</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr *ngFor="let factura of facturasFiltradas">
+                            <td>{{ factura.id_factura }}</td>
+                            <td>{{ factura.cliente }}</td>
+                            <td>{{ factura.fecha_emision }}</td>
+                            <td>{{ factura.fecha_vencimiento }}</td>
+
+                            <td>
+                                {{ factura.monto_total | currency:'COP':'symbol':'1.0-0':'es-CO' }}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                    title="Ver detalle de factura" (click)="verFactura(factura)">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2"
+                                    title="Editar factura" [disabled]="factura.estado.toLowerCase() !== 'pendiente'"
+                                    (click)="abrirEdicion(factura)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+
+                            </td>
+                            <td>
+
+                                <span class="badge" [ngClass]="factura.estado.toLowerCase() === 'pagada'
+                    ? 'bg-success'
+                    : 'bg-warning text-dark'">
+                                    {{ factura.estado }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        <tr *ngIf="facturasFiltradas.length === 0">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                No se encontraron facturas.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Ventana de detalle de factura -->
+<div *ngIf="facturaSeleccionada as factura" class="modal d-block" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="tituloDetalleFactura" style="background: rgba(0, 0, 0, 0.5); z-index: 2000;">
+
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title text-primary" id="tituloDetalleFactura">
+                    Detalle de la factura #{{ factura.id_factura }}
+                </h5>
+
+                <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarDetalle()">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <h5 class="fw-bold mb-3">{{ factura.cliente }}</h5>
+
+                <p><strong>ID del cliente:</strong> {{ factura.id_cliente }}</p>
+                <p><strong>Fecha de emisión:</strong> {{ factura.fecha_emision }}</p>
+                <p><strong>Fecha de vencimiento:</strong> {{ factura.fecha_vencimiento }}</p>
+
+                <hr>
+
+                <h6 class="fw-bold">Información del pago</h6>
+
+                <p>
+                    <strong>Valor total:</strong>
+                    {{ factura.monto_total | currency:'COP':'symbol':'1.0-0':'es-CO' }}
+                </p>
+
+                <p>
+                    <strong>Estado:</strong>
+                    <span class="badge" [ngClass]="factura.estado.toLowerCase() === 'pagada'
+              ? 'bg-success'
+              : 'bg-warning text-dark'">
+                        {{ factura.estado }}
+                    </span>
+                </p>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarDetalle()">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Ventana para editar facturas -->
+<div *ngIf="editando && facturaEditar" class="modal d-block" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="tituloEditarFactura" style="background: rgba(0,0,0,0.5); z-index: 2050;">
+
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+
+            <!-- Encabezado -->
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="tituloEditarFactura">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Editar factura #{{ facturaEditar.id_factura }}
+                </h5>
+
+                <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" [disabled]="guardando"
+                    (click)="cerrarEdicion()">
+                </button>
+            </div>
+
+            <!-- Formulario -->
+            <form (ngSubmit)="guardarEdicion()">
+
+                <div class="modal-body p-4">
+
+                    <div *ngIf="errorEdicion" class="alert alert-danger">
+                        {{ errorEdicion }}
+                    </div>
+
+                    <div class="row g-3">
+
+                        <!-- Cliente -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                Cliente
+                            </label>
+
+                            <input type="text" class="form-control" [value]="facturaEditar.cliente" readonly>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                Estado
+                            </label>
+
+                            <input type="text" class="form-control" value="Pendiente" readonly>
+                        </div>
+
+                        <!-- Fecha de emisión -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                Fecha de emisión
+                            </label>
+
+                            <input type="date" class="form-control" name="fechaEmision"
+                                [(ngModel)]="facturaEditar.fecha_emision" required>
+                        </div>
+
+                        <!-- Fecha de vencimiento -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                Fecha de vencimiento
+                            </label>
+
+                            <input type="date" class="form-control" name="fechaVencimiento"
+                                [(ngModel)]="facturaEditar.fecha_vencimiento" required>
+                        </div>
+
+                        <!-- Valor de la factura -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">
+                                Valor de la factura (COP)
+                            </label>
+
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+
+                                <input type="number" class="form-control" name="montoTotal"
+                                    [(ngModel)]="facturaEditar.monto_total" min="1" step="1" required>
+                            </div>
+
+                            <small class="text-muted">
+                                Ingresa el valor en pesos colombianos.
+                            </small>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-outline-secondary" [disabled]="guardando"
+                        (click)="cerrarEdicion()">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn btn-primary" [disabled]="guardando">
+
+                        <i class="bi bi-check-circle me-1"></i>
+
+                        {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

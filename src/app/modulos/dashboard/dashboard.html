@@ -1,0 +1,196 @@
+<div class="container-fluid">
+
+    <!-- Miga de pan -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <i class="bi bi-house-door me-1"></i>
+                Inicio
+            </li>
+            <li class="breadcrumb-item">
+                Administración
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Resumen general
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Título principal -->
+    <div class="mb-4">
+        <h2 class="fw-bold">Resumen general</h2>
+        <p class="text-secondary">
+            Bienvenido al panel administrativo de SEITELCOM.
+        </p>
+    </div>
+
+    <!-- Tarjetas de resumen -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-people fs-2 text-primary"></i>
+                    <p class="text-secondary mt-3 mb-1">
+                        Clientes registrados
+                    </p>
+                    <h3 class="fw-bold">250</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-receipt fs-2 text-primary"></i>
+                    <p class="text-secondary mt-3 mb-1">
+                        Facturas pendientes
+                    </p>
+                    <h3 class="fw-bold">35</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-credit-card fs-2 text-success"></i>
+                    <p class="text-secondary mt-3 mb-1">
+                        Pagos realizados
+                    </p>
+                    <h3 class="fw-bold">180</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-cash-stack fs-2 text-primary"></i>
+                    <p class="text-secondary mt-3 mb-1">
+                        Recaudo del mes
+                    </p>
+                    <h3 class="fw-bold">$8.500.000</h3>
+                    <small class="text-secondary">COP</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Gráficos del Dashboard -->
+    <div class="row g-3 mb-4">
+
+        <!-- Gráfico de ingresos -->
+        <div class="col-12 col-xl-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-1">
+                        Comportamiento de ingresos
+                    </h5>
+                    <p class="text-secondary small mb-4">
+                        Evolución mensual en millones de pesos colombianos
+                    </p>
+
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="incomeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráfico de servicios -->
+        <div class="col-12 col-xl-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-1">
+                        Servicios contratados
+                    </h5>
+                    <p class="text-secondary small mb-4">
+                        Distribución de clientes por servicio
+                    </p>
+
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="servicesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tabla de facturas -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+                <h5 class="fw-bold mb-0">
+                    Facturas recientes
+                </h5>
+
+                <div class="input-group" style="max-width: 280px;">
+                    <span class="input-group-text bg-white">
+                        <i class="bi bi-search"></i>
+                    </span>
+
+                    <input type="search" class="form-control" placeholder="Buscar factura..."
+                        aria-label="Buscar factura" [(ngModel)]="busquedaFactura">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Factura</th>
+                            <th>Cliente</th>
+                            <th>Servicio</th>
+                            <th>Valor</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (factura of facturasFiltradas; track factura.numero) {
+                        <tr>
+                            <td>{{ factura.numero }}</td>
+
+                            <td>{{ factura.cliente }}</td>
+
+                            <td>{{ factura.servicio }}</td>
+
+                            <td>
+                                {{ factura.valor.toLocaleString('es-CO') }}
+                                COP
+                            </td>
+
+                            <td>
+                                <span class="badge" [class.bg-success]="factura.estado === 'Pagada'"
+                                    [class.bg-warning]="factura.estado === 'Pendiente'"
+                                    [class.text-dark]="factura.estado === 'Pendiente'">
+
+                                    {{ factura.estado }}
+
+                                </span>
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-secondary">
+                                <i class="bi bi-search fs-3 d-block mb-2"></i>
+                                No se encontraron facturas.
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

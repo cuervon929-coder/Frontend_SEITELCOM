@@ -1,0 +1,253 @@
+<div class="container-fluid">
+
+    <!-- Miga de pan -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <i class="bi bi-house-door me-1"></i>
+                Inicio
+            </li>
+            <li class="breadcrumb-item">Administración</li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Clientes
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Título -->
+    <div class="d-flex flex-wrap justify-content-between
+              align-items-center gap-3 mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">Gestión de clientes</h2>
+            <p class="text-secondary mb-0">
+                Consulta y administra los clientes
+                registrados en SEITELCOM.
+            </p>
+        </div>
+
+        <button class="btn btn-outline-primary" (click)="cargarClientes()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Actualizar clientes
+        </button>
+    </div>
+
+    <!-- Tarjetas informativas -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-people fs-2 text-primary"></i>
+                    <p class="text-secondary mt-3 mb-1">
+                        Total de clientes
+                    </p>
+                    <h3 class="fw-bold">{{ clientes.length }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-person-check fs-2 text-success"></i>
+                    <p class="text-secondary mt-3 mb-1">
+                        Clientes activos
+                    </p>
+                    <h3 class="fw-bold">{{ clientesActivos }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <i class="bi bi-person-x fs-2 text-danger"></i>
+                    <p class="text-secondary mt-3 mb-1">
+                        Clientes inactivos
+                    </p>
+                    <h3 class="fw-bold">{{ clientesInactivos }}</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tabla -->
+
+    <div class="card-header bg-white py-3">
+
+        <div class="d-flex flex-wrap justify-content-between
+              align-items-center gap-3">
+
+            <h5 class="fw-bold mb-0">
+                Clientes registrados
+            </h5>
+
+            <div class="input-group" style="max-width: 320px;">
+
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-search"></i>
+                </span>
+
+                <input type="search" class="form-control" placeholder="Buscar cliente..." aria-label="Buscar cliente"
+                    [(ngModel)]="busqueda">
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        <!-- Indicador de carga -->
+        <div *ngIf="cargando" class="text-center py-4">
+            <div class="spinner-border text-primary"></div>
+            <p class="mt-2 text-secondary">
+                Cargando clientes...
+            </p>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+        </div>
+
+        <!-- Tabla dinámica -->
+        <div *ngIf="!cargando && !error" class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre completo</th>
+                        <th>Identificación</th>
+                        <th>Correo electrónico</th>
+                        <th>Teléfono</th>
+                        <th>Dirección</th>
+                        <th>Servicios Contratados</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr *ngFor="let cliente of clientesFiltrados">
+                        <td>{{ cliente.id_cliente }}</td>
+                        <td>{{ cliente.nombre }}</td>
+                        <td>{{ cliente.numero_documento || '—' }}</td>
+                        <td>{{ cliente.correo || '—' }}</td>
+                        <td>{{ cliente.telefono || '—' }}</td>
+                        <td>{{ cliente.direccion || '—' }}</td>
+                        <td>{{ obtenerServicios(cliente.id_cliente) }}</td>
+                        <td>
+                            <span class="badge" [ngClass]="{
+                                'bg-success': obtenerEstado(cliente.id_cliente) === 'Activo',
+                                'bg-danger': obtenerEstado(cliente.id_cliente) === 'Inactivo'
+                                }">
+                                {{ obtenerEstado(cliente.id_cliente) }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary"
+                                title="Ver información del cliente" (click)="verCliente(cliente)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="clientesFiltrados.length === 0">
+                        <td colspan="9" class="text-center text-secondary py-4">
+                            No se encontraron clientes.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<!-- Ventana de información del cliente -->
+<div *ngIf="clienteSeleccionado as cliente" style="
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  ">
+    <div class="bg-white rounded-3 shadow-lg" style="
+      width: 100%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+    ">
+
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center border-bottom p-3">
+            <h5 class="mb-0 text-primary">
+                Información del cliente
+            </h5>
+
+            <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarDetalle()">
+            </button>
+        </div>
+
+        <!-- Información -->
+        <div class="p-4">
+
+            <h5 class="fw-bold text-primary mb-3">
+                {{ cliente.nombre }}
+            </h5>
+
+            <p><strong>ID:</strong> {{ cliente.id_cliente }}</p>
+
+            <p>
+                <strong>Identificación:</strong>
+                {{ cliente.tipo_documento }}
+                {{ cliente.numero_documento }}
+            </p>
+
+            <p><strong>Correo:</strong> {{ cliente.correo }}</p>
+
+            <p><strong>Teléfono:</strong> {{ cliente.telefono }}</p>
+
+            <p><strong>Dirección:</strong> {{ cliente.direccion }}</p>
+
+            <hr>
+
+            <h6 class="fw-bold">Servicios contratados</h6>
+
+            <p>{{ obtenerServicios(cliente.id_cliente) }}</p>
+
+            <p>
+                <strong>Estado:</strong>
+                <span class="badge" [ngClass]="
+            obtenerEstado(cliente.id_cliente) === 'Activo'
+              ? 'bg-success'
+              : 'bg-danger'
+          ">
+                    {{ obtenerEstado(cliente.id_cliente) }}
+                </span>
+            </p>
+
+        </div>
+
+        <!-- Botón cerrar -->
+        <div class="border-top p-3 text-end">
+            <button type="button" class="btn btn-secondary" (click)="cerrarDetalle()">
+                Cerrar
+            </button>
+        </div>
+
+    </div>
+</div>

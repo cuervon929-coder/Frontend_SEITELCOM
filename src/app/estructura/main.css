@@ -1,0 +1,36 @@
+
+.app-layout {
+  min-height: 100vh;
+}
+
+.main-area {
+  margin-left: 260px;
+  min-height: 100vh;
+  transition: margin-left .25s ease;
+}
+
+.content {
+  padding: 30px 35px;
+}
+
+.mobile-overlay {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .main-area {
+    margin-left: 0;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .mobile-overlay.show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 28, 54, .35);
+    z-index: 1030;
+  }
+}
