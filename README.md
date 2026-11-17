@@ -1,59 +1,46 @@
-# Frontend
+# SEITELCOM – Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.7.
+## Descripción
 
-## Development server
+SEITELCOM es una plataforma web de facturación y pagos en línea para una empresa de telecomunicaciones. Permite consultar información relacionada con clientes, servicios, facturas y pagos mediante una interfaz organizada y adaptable a diferentes dispositivos.
 
-To start a local development server, run:
+Este repositorio contiene el frontend de la aplicación, desarrollado con Angular y Bootstrap.
 
-```bash
-ng serve
-```
+## Tecnologías utilizadas
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Angular
+- TypeScript
+- HTML
+- CSS
+- Bootstrap
+- Bootstrap Icons
 
-## Code scaffolding
+## Módulos del sistema
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Dashboard:** resumen general de la plataforma.
+- **Clientes:** consulta de clientes y servicios contratados.
+- **Facturas:** consulta, visualización y gestión de facturas.
+- **Pagos:** historial de pagos registrados.
+- **Reportes:** resumen de información de facturación y pagos.
+- **Notificaciones:** consulta de notificaciones.
+- **Usuarios:** visualización de usuarios registrados.
+- **Configuración:** información administrativa básica.
 
-```bash
-ng generate component component-name
-```
+## Instalación y ejecución
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+1. Instalar Node.js y npm.
+2. Descargar o clonar este repositorio.
+3. Abrir una terminal en la carpeta del frontend.
+4. Ejecutar `npm install` para instalar las dependencias.
+5. Ejecutar `npm start` para iniciar el servidor de desarrollo.
+6. Abrir `http://localhost:4200` en el navegador.
 
-```bash
-ng generate --help
-```
+Para consultar datos reales es necesario tener funcionando el backend PHP y la base de datos MySQL.
 
-## Building
+## Características
 
-To build the project run:
+La interfaz utiliza colores blancos y tonos azules, tablas de información, tarjetas de resumen, iconos y un menú lateral adaptable a dispositivos móviles.
 
-```bash
-ng build
-```
+## Proyecto académico
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+SEITELCOM fue desarrollado como parte de una actividad de formación en desarrollo de software, aplicando conocimientos de bases de datos, programación web y diseño de interfaces.
